@@ -13,11 +13,13 @@
     <title>Expense Tracker</title>
 
     <!-- Bootstrap Core CSS -->
-    <!-- <link href="{% static 'tracker/css/bootstrap.min.css' %}" rel="stylesheet"> -->
   	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-
     <!-- Custom CSS -->
     <link href="{% static 'tracker/css/expenses.css' %}" rel="stylesheet">
+
+
+
+    <link href="{% static 'tracker/css/jquery.simple-dtpicker.css' %}" rel="stylesheet">
 
 </head>
 
@@ -73,7 +75,7 @@
                 </h1>
             </div>
             <div class="col-md-5">
-                <a class="btn btn-default" href="#" id='new_post_btn' data-toggle="modal" data-target="#new_post_modal">New Expense <span class="glyphicon glyphicon-plus"></span></a>
+                <a class="btn btn-default" href="#" id='new_expense_btn' data-toggle="modal" data-target="#new_expense_modal">New Expense <span class="glyphicon glyphicon-plus"></span></a>
                 <hr>
             </div>
         </div>
@@ -87,13 +89,12 @@
 
                 <div class="col-md-5">
 	                <p style="font-weight: bold">{{ expense.description }}</p>
-                    <p style="font-weight: bold">Amount: {{ expense.amount }}$</p>
+                    <p style="font-weight: bold">Amount: ${{ expense.amount }}</p>
                 </div>
                 <div class="col-md-4">
                 	{{ expense.date_time }}
 
  					<!-- HAVE TIME ZONE THING HERE -->
-
 
                 </div>
             </div>
@@ -170,8 +171,15 @@
 
 
 
-    <!-- New Post Modal -->
-    <div class="modal fade" id="new_post_modal" tabindex="-1" role="dialog"
+    <script src="{% static 'tracker/js/jquery.simple-dtpicker.js' %}"></script>
+
+
+
+
+
+
+    <!-- New Expense Modal -->
+    <div class="modal fade" id="new_expense_modal" tabindex="-1" role="dialog"
          aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -190,23 +198,48 @@
                 <!-- Modal Body -->
                 <div class="modal-body">
 
-                    <form role="form" id='newPostForm' method="post" action="#" onSubmit="return submit_new_post_form({% url 'new_expense' %}, '{{ csrf_token }}', '{{ page.id_num }}')">
+                    <form role="form" id='newExpenseForm' method="post" action="#" onSubmit="return submit_new_expense_form({% url 'new_expense' %}, '{{ csrf_token }}', '{{ page.id_num }}')">
                         {% csrf_token %}
                         <div id='new_post_error'>
                         </div>
                       <div class="form-group">
-                        <label for="post_message">Write something...</label>
+                        <label for="expense_description">Expense Description</label>
                           <input type="text" class="form-control"
-                          id="post_message" placeholder="New post message" required />
-                      </div>
-                      <div class="form-group">
-                        <label for="post_pic">Picture (Optional)</label>
-                          <input type="text" class="form-control"
-                              id="post_pic" placeholder="Image Url"/>
+                          id="expense_description" placeholder="Pizza for Dinner :D" required />
                       </div>
 
-                        <label class="radio-inline"><input type="radio" name="optradio" value="Published" required>Published</label>
-                        <label class="radio-inline"><input type="radio" name="optradio" value="Unpublished">Unpublished</label>
+
+					  <div class="form-group">
+					  <label for="expense_amount">Amount</label>
+					  	<div class="input-group">
+						  <span class="input-group-addon">$</span>
+						  <input type="number" step="0.01" min="0" placeholder="9.99" class="form-control" aria-label="Amount in US Dollars">
+						</div>
+					  </div>
+
+
+
+
+
+
+			  		<div class="form-group">
+				  		<label for="expense_date_time">Expense Description</label>
+				  		<br>
+						<input id="expense_date_time" type="text" name="date" value="">
+						<script type="text/javascript">
+							$(function(){
+								$('*[name=date]').appendDtpicker({
+									"minuteInterval": 5
+								});
+							});
+						</script>
+					</div>
+
+
+
+
+
+
                         <br>
                         <br>
 

@@ -32,12 +32,12 @@ footer {
     color: white;
 }
 
-#new_post_btn {
+#new_expense_btn {
 	background-color: #5693e9;
 	color: white;
 }
 
-#new_post_btn:hover {
+#new_expense_btn:hover {
 	background-color: white;
 	color: #5693e9;
 }
