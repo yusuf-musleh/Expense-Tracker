@@ -1,0 +1,53 @@
+
+body {
+    padding-top: 70px;
+}
+
+footer {
+    margin: 50px 0;
+}
+
+
+.navbar-default {
+    background-color: #5693e9;
+    border-color: #E7E7E7;
+}
+/* title */
+.navbar-default .navbar-brand {
+    color: white;
+}
+
+.navbar-default .navbar-brand:hover,
+.navbar-default .navbar-brand:focus {
+    color: white;
+}
+
+/* link */
+.navbar-default .navbar-nav > li > a {
+    color: #B4B4B4;
+}
+
+.navbar-default .navbar-nav > li > a:hover,
+.navbar-default .navbar-nav > li > a:focus {
+    color: white;
+}
+
+#new_post_btn {
+	background-color: #5693e9;
+	color: white;
+}
+
+#new_post_btn:hover {
+	background-color: white;
+	color: #5693e9;
+}
+
+#new_expense_btn_submit {
+    background-color: #5693e9;
+    color: white;
+}
+
+#new_expense_btn_submit:hover {
+    background-color: white;
+    color: #5693e9
+}

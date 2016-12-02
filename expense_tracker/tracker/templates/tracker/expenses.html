@@ -1,0 +1,240 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Expense Tracker</title>
+
+    <!-- Bootstrap Core CSS -->
+    <!-- <link href="{% static 'tracker/css/bootstrap.min.css' %}" rel="stylesheet"> -->
+  	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- Custom CSS -->
+    <link href="{% static 'tracker/css/expenses.css' %}" rel="stylesheet">
+
+</head>
+
+<body>
+
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">Expense Tracker</a>
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <!-- <li>
+                        <a href="#">All</a>
+                    </li> -->
+                    {% if user.is_superuser %}
+                    <li>
+                        <a href="#">All User's Expenses</a>
+                    </li>
+                    {% endif %}
+                    <li>
+                        <a href="/">Report</a>
+                    </li>
+                    <li>
+                        <a href="/logout/">Logout</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <!-- Page Content -->
+    <div class="container">
+
+        {% if user.is_authenticated %}
+
+        <!-- Page Heading -->
+        <div class="row">
+            <div class="col-lg-12" id="managing_page_header">
+                <h1 class="page-header">{{ user.first_name }}'s
+                    <small>Expenses</small>
+                </h1>
+            </div>
+            <div class="col-md-5">
+                <a class="btn btn-default" href="#" id='new_post_btn' data-toggle="modal" data-target="#new_post_modal">New Expense <span class="glyphicon glyphicon-plus"></span></a>
+                <hr>
+            </div>
+        </div>
+        <!-- /.row -->
+
+
+        {% if expenses %}
+        <div id="expenses_div">
+            {% for expense in expenses %}
+            <div class="row">
+
+                <div class="col-md-5">
+	                <p style="font-weight: bold">{{ expense.description }}</p>
+                    <p style="font-weight: bold">Amount: {{ expense.amount }}$</p>
+                </div>
+                <div class="col-md-4">
+                	{{ expense.date_time }}
+
+ 					<!-- HAVE TIME ZONE THING HERE -->
+
+
+                </div>
+            </div>
+            <hr>
+            {% endfor %}
+        </div>
+
+        {% else %}
+        <div class="row">
+            <div class="col-md-5">
+                <h3>You have no expenses to track!</h3>
+            </div>
+        </div>
+
+        {% endif %}
+
+        <!-- Pagination -->
+<!--         <div class="row text-center">
+            <div class="col-lg-12">
+                <ul class="pagination">
+                    <li>
+                        <a href="#">&laquo;</a>
+                    </li>
+                    <li class="active">
+                        <a href="#">1</a>
+                    </li>
+                    <li>
+                        <a href="#">2</a>
+                    </li>
+                    <li>
+                        <a href="#">3</a>
+                    </li>
+                    <li>
+                        <a href="#">4</a>
+                    </li>
+                    <li>
+                        <a href="#">5</a>
+                    </li>
+                    <li>
+                        <a href="#">&raquo;</a>
+                    </li>
+                </ul>
+            </div>
+        </div> -->
+        <!-- /.row -->
+
+        {% else %}
+            <h3>Please Login First!</h3>
+            <hr>
+        {% endif %}
+
+
+        <!-- Footer -->
+        <footer>
+            <div class="row">
+                <div class="col-lg-12">
+                    <p>Copyright &copy; Expense Tracker 2016</p>
+                </div>
+            </div>
+            <!-- /.row -->
+        </footer>
+
+    </div>
+    <!-- /.container -->
+
+    <!-- jQuery -->
+    <script src="{% static 'tracker/js/jquery.js' %}"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="{% static 'tracker/js/bootstrap.min.js' %}"></script>
+	<!-- jQuery date formatter -->
+    <script src="{% static 'tracker/js/jquery-dateFormat.min.js' %}"></script>
+    <!-- cookie.js for using AJAX -->
+    <script src="{% static 'tracker/js/js.cookie.js' %}"></script>
+
+
+
+    <!-- New Post Modal -->
+    <div class="modal fade" id="new_post_modal" tabindex="-1" role="dialog"
+         aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <button type="button" class="close"
+                       data-dismiss="modal">
+                           <span aria-hidden="true">&times;</span>
+                           <span class="sr-only">Close</span>
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">
+                        Create New Expense
+                    </h4>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="modal-body">
+
+                    <form role="form" id='newPostForm' method="post" action="#" onSubmit="return submit_new_post_form({% url 'new_expense' %}, '{{ csrf_token }}', '{{ page.id_num }}')">
+                        {% csrf_token %}
+                        <div id='new_post_error'>
+                        </div>
+                      <div class="form-group">
+                        <label for="post_message">Write something...</label>
+                          <input type="text" class="form-control"
+                          id="post_message" placeholder="New post message" required />
+                      </div>
+                      <div class="form-group">
+                        <label for="post_pic">Picture (Optional)</label>
+                          <input type="text" class="form-control"
+                              id="post_pic" placeholder="Image Url"/>
+                      </div>
+
+                        <label class="radio-inline"><input type="radio" name="optradio" value="Published" required>Published</label>
+                        <label class="radio-inline"><input type="radio" name="optradio" value="Unpublished">Unpublished</label>
+                        <br>
+                        <br>
+
+                        <!-- Modal Footer -->
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default"
+                                    data-dismiss="modal">
+                                        Close
+                            </button>
+                            <button type="submit" id='new_expense_btn_submit' class="btn btn-default">
+                                Submit
+                            </button>
+                            <!-- <button type="submit" class="btn btn-primary">Save changes</button> -->
+                        </div>
+
+                    </form>
+
+
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+
+
+
+</body>
+
+</html>

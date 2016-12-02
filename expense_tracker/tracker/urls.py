@@ -1,0 +1,14 @@
+from django.conf.urls import url
+
+from . import views
+
+urlpatterns = [
+	url(r'^$', views.index, name='index'),
+
+	url(r'^signin/', views.signin, name='signin'),
+	url(r'^login/', views.login, name='login'),
+	url(r'^logout/', views.logout, name='logout'),
+
+	url(r'^new_expense/', views.new_expense, name='new_expense'),
+
+]
