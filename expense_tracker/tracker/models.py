@@ -12,4 +12,4 @@ class Expense(models.Model):
 	description = models.TextField()
 
 	def __unicode__(self):
-		return self.amount + " spent on " + self.description + " by " +  self.owner
+		return "$" + str(self.amount) + " spent on " + self.description + " by " +  self.owner.username

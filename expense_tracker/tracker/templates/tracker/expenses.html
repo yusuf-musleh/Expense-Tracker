@@ -85,7 +85,7 @@
         {% if expenses %}
         <div id="expenses_div">
             {% for expense in expenses %}
-            <div class="row">
+            <div id="expense{{expense.id}}" class="row">
 
                 <div class="col-md-5">
 	                <p style="font-weight: bold">{{ expense.description }}</p>
@@ -93,53 +93,33 @@
                 </div>
                 <div class="col-md-4">
                 	{{ expense.date_time }}
-
  					<!-- HAVE TIME ZONE THING HERE -->
-
                 </div>
+
+                <div class="col-md-2">
+	                <button type="button" class="btn btn-default btn-sm">
+	  				<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Update
+					</button>
+	                <button type="button" onclick="delete_expense({% url 'delete_expense' %}, 'expense{{expense.id}}', '{{ csrf_token }}')" class="btn btn-danger btn-sm">
+	  				<span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete
+					</button>
+				</div>
             </div>
-            <hr>
+            <hr id="expense{{expense.id}}hr">
             {% endfor %}
         </div>
 
         {% else %}
-        <div class="row">
+
+        <div id="expenses_div">
+        </div>
+        <div id='no_expense_div' class="row">
             <div class="col-md-5">
                 <h3>You have no expenses to track!</h3>
             </div>
         </div>
 
         {% endif %}
-
-        <!-- Pagination -->
-<!--         <div class="row text-center">
-            <div class="col-lg-12">
-                <ul class="pagination">
-                    <li>
-                        <a href="#">&laquo;</a>
-                    </li>
-                    <li class="active">
-                        <a href="#">1</a>
-                    </li>
-                    <li>
-                        <a href="#">2</a>
-                    </li>
-                    <li>
-                        <a href="#">3</a>
-                    </li>
-                    <li>
-                        <a href="#">4</a>
-                    </li>
-                    <li>
-                        <a href="#">5</a>
-                    </li>
-                    <li>
-                        <a href="#">&raquo;</a>
-                    </li>
-                </ul>
-            </div>
-        </div> -->
-        <!-- /.row -->
 
         {% else %}
             <h3>Please Login First!</h3>
@@ -162,6 +142,8 @@
 
     <!-- jQuery -->
     <script src="{% static 'tracker/js/jquery.js' %}"></script>
+    <!-- Expense Script -->
+    <script src="{% static 'tracker/js/script.js' %}"></script>
     <!-- Bootstrap Core JavaScript -->
     <script src="{% static 'tracker/js/bootstrap.min.js' %}"></script>
 	<!-- jQuery date formatter -->
@@ -198,12 +180,12 @@
                 <!-- Modal Body -->
                 <div class="modal-body">
 
-                    <form role="form" id='newExpenseForm' method="post" action="#" onSubmit="return submit_new_expense_form({% url 'new_expense' %}, '{{ csrf_token }}', '{{ page.id_num }}')">
+                    <form role="form" id='newExpenseForm' method="post" action="#" onSubmit="return submit_new_expense_form({% url 'create_new_expense' %}, '{{ csrf_token }}')">
                         {% csrf_token %}
-                        <div id='new_post_error'>
+                        <div id='new_expense_error'>
                         </div>
                       <div class="form-group">
-                        <label for="expense_description">Expense Description</label>
+                        <label for="expense_description">Description</label>
                           <input type="text" class="form-control"
                           id="expense_description" placeholder="Pizza for Dinner :D" required />
                       </div>
@@ -213,19 +195,16 @@
 					  <label for="expense_amount">Amount</label>
 					  	<div class="input-group">
 						  <span class="input-group-addon">$</span>
-						  <input type="number" step="0.01" min="0" placeholder="9.99" class="form-control" aria-label="Amount in US Dollars">
+						  <input type="number" step="0.01" min="0" placeholder="9.99" class="form-control" id="expense_amount" aria-label="Amount in US Dollars" required>
 						</div>
 					  </div>
 
 
 
-
-
-
 			  		<div class="form-group">
-				  		<label for="expense_date_time">Expense Description</label>
+				  		<label for="expense_date_time">Date & Time</label>
 				  		<br>
-						<input id="expense_date_time" type="text" name="date" value="">
+						<input class="form-control" id="expense_date_time" type="text" name="date" value="">
 						<script type="text/javascript">
 							$(function(){
 								$('*[name=date]').appendDtpicker({
@@ -234,10 +213,6 @@
 							});
 						</script>
 					</div>
-
-
-
-
 
 
                         <br>

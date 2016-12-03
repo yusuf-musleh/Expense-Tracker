@@ -5,10 +5,13 @@ from . import views
 urlpatterns = [
 	url(r'^$', views.index, name='index'),
 
+	# Authentication
 	url(r'^signin/', views.signin, name='signin'),
 	url(r'^login/', views.login, name='login'),
 	url(r'^logout/', views.logout, name='logout'),
 
-	url(r'^new_expense/', views.new_expense, name='new_expense'),
+	# CRUD Actions
+	url(r'^create_new_expense/', views.create_new_expense, name='create_new_expense'),
+	url(r'^delete_expense/', views.delete_expense, name='delete_expense'),
 
 ]

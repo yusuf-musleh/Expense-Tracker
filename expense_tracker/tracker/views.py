@@ -2,11 +2,18 @@ from django.shortcuts import render, HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 
+from tracker.models import Expense
+
+from datetime import datetime
+
+import json
 
 @login_required(login_url='/signin/')
 def index(request):
 	context = {}
-	context['expenses'] = [{'date_time': '12/1/16', 'amount': '15.00', 'description': 'Pizza for lunch.'}, {'date_time': '11/29/16', 'amount': '5.99', 'description': 'Coffee for coding.'}]
+	user_expenses = Expense.objects.filter(owner=request.user)
+	context['expenses'] = user_expenses
+	# context['expenses'] = [{'date_time': '12/1/16', 'amount': '15.00', 'description': 'Pizza for lunch.'}, {'date_time': '11/29/16', 'amount': '5.99', 'description': 'Coffee for coding.'}]
 	return render(request, 'tracker/expenses.html', context)
 
 
@@ -38,7 +45,47 @@ def login(request):
 	else:
 		return HttpResponseRedirect('/')
 
-def new_expense(request):
-	return HttpResponse('new expense backend call')
+
+def create_new_expense(request):
+	if request.user.is_authenticated and request.method == 'POST':
+		try:
+			description = request.POST['expense_description']
+			amount = request.POST['expense_amount']
+			date_time = request.POST['expense_date_time']
+
+			amount = round(float(amount),2)
+			datetime_object = datetime.strptime(date_time, '%Y-%m-%d %H:%M')
+
+			new_expense = Expense(owner=request.user, date_time=datetime_object, amount=amount, description=description)
+			new_expense.save()
+
+			# success_data = ['success', new_expense.id, new_expense.date_time.strftime("%b. %-d, %Y, %-I:%M %p")]
+			success_data = {'status': 'success', 'new_id': new_expense.id, 'readable_date': new_expense.date_time.strftime("%b. %-d, %Y, %-I:%M %p")}
+			return HttpResponse(json.dumps( success_data ))
+		except:
+			failed_data = ['failed', 'Failed to create expense, try again!']
+			return HttpResponse(json.dumps(failed_data))
+	else:
+		return HttpResponseRedirect('/')
+
+
+def delete_expense(request):
+	if request.user.is_authenticated and request.method == 'POST':
+		try:
+			expense_id = request.POST['expense_id']
+			expense = Expense.objects.get(id=expense_id, owner=request.user)
+			expense.delete()
+			return HttpResponse('success')
+		except:
+			return HttpResponse('You cannot delete an expense you do not own!')
+
+	else:
+		return HttpResponseRedirect('/')
+
+
+
+
+
+
 
 
