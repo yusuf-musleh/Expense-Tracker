@@ -37,7 +37,7 @@ def get_expenses(request):
 	else:
 		failed_data = {}
 		failed_data['status'] = 'failed'
-		failed_data['messages'] = 'You must be an admin to view everybody\'s expenses!'
+		failed_data['message'] = 'You must be an admin to view everybody\'s expenses!'
 		return HttpResponse(json.dumps(failed_data))
 
 
@@ -70,6 +70,7 @@ def login(request):
 		return HttpResponseRedirect('/')
 
 
+@login_required(login_url='/signin/')
 def create_new_expense(request):
 	if request.user.is_authenticated and request.method == 'POST':
 		try:
@@ -90,24 +91,55 @@ def create_new_expense(request):
 			failed_data = {'status': 'failed', 'message': 'Failed to create expense, try again!'}
 			return HttpResponse(json.dumps(failed_data))
 	else:
-		return HttpResponseRedirect('/')
+		failed_data = {'status': 'failed', 'message': 'Failed to create expense, try again!'}
+		return HttpResponse(json.dumps(failed_data))
 
 
+@login_required(login_url='/signin/')
 def delete_expense(request):
-	if request.user.is_authenticated and request.method == 'POST':
+	if request.method == 'POST':
 		try:
 			expense_id = request.POST['expense_id']
 			expense = Expense.objects.get(id=expense_id, owner=request.user)
 			expense.delete()
 			return HttpResponse('success')
 		except:
-			return HttpResponse('You cannot delete an expense you do not own!')
+			return HttpResponse('You cannot delete an expense you do not own or does not exist!')
 
 	else:
-		return HttpResponseRedirect('/')
+		return HttpResponse('Failed to delete expense!')
 
 
+@login_required(login_url='/signin/')
+def update_expense(request):
+	if request.method == 'POST':
+		try:
+			expense_id = request.POST['expense_id']
+			updated_expense_description = request.POST['updated_expense_description']
+			updated_expense_amount = request.POST['updated_expense_amount']
+			updated_date_time = request.POST['updated_date_time']
 
+			updated_expense_amount = round(float(updated_expense_amount),2)
+			updated_date_time = datetime.strptime(updated_date_time, '%Y-%m-%d %H:%M')
+
+		except:
+			failed_data = {'status': 'failed', 'message': 'Failed to fetch updated data!'}
+
+		try:
+			current_expense = Expense.objects.get(id=expense_id, owner=request.user)
+			current_expense.description = updated_expense_description
+			current_expense.amount = updated_expense_amount
+			current_expense.date_time = updated_date_time
+
+			current_expense.save()
+			success_data = {'status': 'success', 'updated_expense': current_expense.to_json()}
+			return HttpResponse(json.dumps(success_data))
+		except:
+			failed_data = {'status': 'failed', 'message': 'You cannot update an expense you do not own or does not exist!'}
+
+	else:
+		failed_data = {'status': 'failed', 'message': 'Failed to update expense!'}
+		return HttpResponse(json.dumps(failed_data))
 
 
 

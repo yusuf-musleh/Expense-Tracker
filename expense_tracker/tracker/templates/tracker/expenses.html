@@ -12,12 +12,26 @@
 
     <title>Expense Tracker</title>
 
+    <!-- jQuery -->
+    <script src="{% static 'tracker/js/jquery.js' %}"></script>
+    <!-- Expense Script -->
+    <script src="{% static 'tracker/js/script.js' %}"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="{% static 'tracker/js/bootstrap.min.js' %}"></script>
+	<!-- jQuery date formatter -->
+    <script src="{% static 'tracker/js/jquery-dateFormat.min.js' %}"></script>
+    <!-- cookie.js for using AJAX -->
+    <script src="{% static 'tracker/js/js.cookie.js' %}"></script>
+
+
+
+    <script src="{% static 'tracker/js/jquery.simple-dtpicker.js' %}"></script>
+
+
     <!-- Bootstrap Core CSS -->
   	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <!-- Custom CSS -->
     <link href="{% static 'tracker/css/expenses.css' %}" rel="stylesheet">
-
-
 
     <link href="{% static 'tracker/css/jquery.simple-dtpicker.css' %}" rel="stylesheet">
 
@@ -90,27 +104,25 @@
             {% for expense in expenses %}
             <div id="expense{{expense.id}}" class="row">
 
-                <div class="col-md-5">
+                <div id="desc_and_amount" class="col-md-5">
 	                <p style="font-weight: bold">{{ expense.description }}</p>
                     <p style="font-weight: bold">Amount: ${{ expense.amount }}</p>
                 </div>
-                <div class="col-md-4">
+                <div id="date_and_time" class="col-md-4">
                 	{{ expense.date_time }}
- 					<!-- HAVE TIME ZONE THING HERE -->
                 </div>
-                {% block actions_buttons %}
-                <div class="col-md-2">
-	                <button type="button" class="btn btn-default btn-sm">
+                <div id='action_buttons_div' class="col-md-2">
+	                <button type="button" onclick="update_expense({% url 'update_expense' %}, 'expense{{expense.id}}', '{{ csrf_token }}')" class="btn btn-default btn-sm">
 	  				<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Update
 					</button>
 	                <button type="button" onclick="delete_expense({% url 'delete_expense' %}, 'expense{{expense.id}}', '{{ csrf_token }}')" class="btn btn-danger btn-sm">
 	  				<span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete
 					</button>
 				</div>
-				{% endblock %}
             </div>
             <hr id="expense{{expense.id}}hr">
             {% endfor %}
+
         </div>
 
         {% else %}
@@ -143,24 +155,6 @@
 
     </div>
     <!-- /.container -->
-
-    <!-- jQuery -->
-    <script src="{% static 'tracker/js/jquery.js' %}"></script>
-    <!-- Expense Script -->
-    <script src="{% static 'tracker/js/script.js' %}"></script>
-    <!-- Bootstrap Core JavaScript -->
-    <script src="{% static 'tracker/js/bootstrap.min.js' %}"></script>
-	<!-- jQuery date formatter -->
-    <script src="{% static 'tracker/js/jquery-dateFormat.min.js' %}"></script>
-    <!-- cookie.js for using AJAX -->
-    <script src="{% static 'tracker/js/js.cookie.js' %}"></script>
-
-
-
-    <script src="{% static 'tracker/js/jquery.simple-dtpicker.js' %}"></script>
-
-
-
 
 
 

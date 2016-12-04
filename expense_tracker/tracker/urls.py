@@ -15,5 +15,6 @@ urlpatterns = [
 	# CRUD Actions
 	url(r'^create_new_expense/', views.create_new_expense, name='create_new_expense'),
 	url(r'^delete_expense/', views.delete_expense, name='delete_expense'),
+	url(r'^update_expense/', views.update_expense, name='update_expense'),
 
 ]
