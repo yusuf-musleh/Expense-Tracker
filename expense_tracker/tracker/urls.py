@@ -3,7 +3,9 @@ from django.conf.urls import url
 from . import views
 
 urlpatterns = [
+	# Pages
 	url(r'^$', views.index, name='index'),
+	url(r'^get_expenses/', views.get_expenses, name='get_expenses'),
 
 	# Authentication
 	url(r'^signin/', views.signin, name='signin'),

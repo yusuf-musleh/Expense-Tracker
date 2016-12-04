@@ -17,6 +17,30 @@ def index(request):
 	return render(request, 'tracker/expenses.html', context)
 
 
+@login_required(login_url='/signin/')
+def get_expenses(request):
+	all_users = request.POST['all_users']
+	if all_users == 'true' and request.user.is_staff:
+		success_data = {}
+		everyones_expenses = Expense.objects.all()
+		everyones_expenses = map(lambda x: x.to_json(), everyones_expenses)
+		success_data['status'] = 'success'
+		success_data['expenses'] = everyones_expenses
+		return HttpResponse(json.dumps(success_data))
+	elif all_users == 'false':
+		user_expenses = Expense.objects.filter(owner=request.user)
+		user_expenses = map(lambda x: x.to_json(), user_expenses)
+		success_data = {}
+		success_data['status'] = 'success'
+		success_data['expenses'] = user_expenses
+		return HttpResponse(json.dumps(success_data))
+	else:
+		failed_data = {}
+		failed_data['status'] = 'failed'
+		failed_data['messages'] = 'You must be an admin to view everybody\'s expenses!'
+		return HttpResponse(json.dumps(failed_data))
+
+
 def signin(request):
 	if request.user.is_authenticated:
 		return HttpResponseRedirect('/')
@@ -63,7 +87,7 @@ def create_new_expense(request):
 			success_data = {'status': 'success', 'new_id': new_expense.id, 'readable_date': new_expense.date_time.strftime("%b. %-d, %Y, %-I:%M %p")}
 			return HttpResponse(json.dumps( success_data ))
 		except:
-			failed_data = ['failed', 'Failed to create expense, try again!']
+			failed_data = {'status': 'failed', 'message': 'Failed to create expense, try again!'}
 			return HttpResponse(json.dumps(failed_data))
 	else:
 		return HttpResponseRedirect('/')
@@ -81,6 +105,8 @@ def delete_expense(request):
 
 	else:
 		return HttpResponseRedirect('/')
+
+
 
 
 

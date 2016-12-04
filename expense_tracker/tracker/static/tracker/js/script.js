@@ -1,3 +1,77 @@
+function generate_action_buttons(all_users, id, csrf) {
+	if (all_users == 'true'){
+		return ""
+	}
+	else{
+		return "<div class=\"col-md-2\">\
+	                <button type=\"button\" class=\"btn btn-default btn-sm\">\
+	  				<span class=\"glyphicon glyphicon-pencil\" aria-hidden=\"true\"></span> Update\
+					</button>\
+	                <button type=\"button\" onclick=\"delete_expense('/delete_expense/', 'expense" + id + "', '" + csrf + "')\" class=\"btn btn-danger btn-sm\">\
+	  				<span class=\"glyphicon glyphicon-trash\" aria-hidden=\"true\"></span> Delete\
+					</button>\
+				</div>"
+	}
+}
+
+function get_expenses(url, all_users, user, csrf) {
+	console.log('calling properly');
+
+	$.post(url,
+		{
+			csrfmiddlewaretoken: csrf,
+			all_users: all_users
+		},
+		function(data) {
+			console.log(data);
+			data = JSON.parse(data);
+			console.log(data);
+			if (data['status'] == 'success'){
+				$('#add_expense_div').empty();
+				if (all_users == 'true'){
+					$('#expenses_div').empty();
+					$('#no_expense_div').empty();
+					$('#managing_page_header').html("<h1 class=\"page-header\">Everyone's\
+	                    <small>Expenses</small>\
+	                 	</h1>");
+				}
+				else{
+					$('#expenses_div').html("<a class=\"btn btn-default\" href=\"#\" id='new_expense_btn' data-toggle=\"modal\" data-target=\"#new_expense_modal\">New Expense <span class=\"glyphicon glyphicon-plus\"></span></a><hr>");
+					$('#managing_page_header').html("<h1 class=\"page-header\">" + user + "'s\
+	                    <small>Expenses</small>\
+	                	</h1>");
+				}
+
+				var all_expenese_html = ""
+
+	            for (var i = 0; i < data['expenses'].length; i++) {
+						var exp = data['expenses'][i]
+						single_expense_html = "<div id=\"expense" + exp['id'] + "\" class=\"row\">\
+	                <div class=\"col-md-5\">\
+		                <p style=\"font-weight: bold\">" + exp['description'] + "</p>\
+	                    <p style=\"font-weight: bold\">Amount: $" + exp['amount'] + "</p>\
+	                </div>\
+	                <div class=\"col-md-4\">" + exp['date_time'] + "</div>\
+                	" + generate_action_buttons(all_users, exp['id'], csrf) + "\
+		            </div>\
+		            <hr id=\"expense" + exp['id'] + "hr\">"
+
+		            all_expenese_html += single_expense_html
+				}
+
+
+				$('#expenses_div').append(all_expenese_html);
+			}
+			else{
+				console.log(data['status']);
+			}
+
+		});
+
+	return false;
+}
+
+
 function submit_new_expense_form(url, csrf) {
 
 	var expense_description = $('#expense_description').val().trim();
@@ -45,7 +119,7 @@ function submit_new_expense_form(url, csrf) {
 
 			}
 			else{
-				console.log(data[1]);
+				console.log(data['message']);
 			}
 
 		});
@@ -89,7 +163,7 @@ function delete_expense(url, expense_div_id, csrf) {
 
 			}
 			else{
-				console.log(data);
+				console.log(data['message']);
 			}
 
 		});
