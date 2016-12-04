@@ -45,11 +45,11 @@
                         <a href="#">All</a>
                     </li> -->
                     <li>
-                        <a onclick="get_expenses('{% url 'get_expenses' %}', 'false', '{{ user.first_name }} ' + '{{ user.last_name }}' ,'{{ csrf_token }}')">My Expenses</a>
+                        <a href="#" style="color: white" id="my_expenses_a" onclick="get_expenses('{% url 'get_expenses' %}', 'false', '{{ user.first_name }} ' + '{{ user.last_name }}' ,'{{ csrf_token }}')">My Expenses</a>
                     </li>
                     {% if user.is_staff %}
                     <li>
-                        <a onclick="get_expenses('{% url 'get_expenses' %}', 'true', '{{ user.first_name }} ' + '{{ user.last_name }}', '{{ csrf_token }}')">All User's Expenses</a>
+                        <a href="#" id="all_user_expenses_a" onclick="get_expenses('{% url 'get_expenses' %}', 'true', '{{ user.first_name }} ' + '{{ user.last_name }}', '{{ csrf_token }}')">All User's Expenses</a>
                     </li>
                     {% endif %}
                     <li>

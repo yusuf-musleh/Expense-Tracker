@@ -14,8 +14,14 @@ function generate_action_buttons(all_users, id, csrf) {
 	}
 }
 
+function display_owner(all_users, owner){
+	if (all_users == 'false'){
+		return ""
+	}
+	return "<p style=\"font-weight: bold\">" + owner + "</p>"
+}
+
 function get_expenses(url, all_users, user, csrf) {
-	console.log('calling properly');
 
 	$.post(url,
 		{
@@ -23,12 +29,12 @@ function get_expenses(url, all_users, user, csrf) {
 			all_users: all_users
 		},
 		function(data) {
-			console.log(data);
 			data = JSON.parse(data);
-			console.log(data);
 			if (data['status'] == 'success'){
 				$('#add_expense_div').empty();
+				$('.navbar-default .navbar-nav > li > a').css('color', '#B4B4B4');
 				if (all_users == 'true'){
+					$('#all_user_expenses_a').css('color', 'white');
 					$('#expenses_div').empty();
 					$('#no_expense_div').empty();
 					$('#managing_page_header').html("<h1 class=\"page-header\">Everyone's\
@@ -36,6 +42,7 @@ function get_expenses(url, all_users, user, csrf) {
 	                 	</h1>");
 				}
 				else{
+					$('#my_expenses_a').css('color', 'white');
 					$('#expenses_div').html("<a class=\"btn btn-default\" href=\"#\" id='new_expense_btn' data-toggle=\"modal\" data-target=\"#new_expense_modal\">New Expense <span class=\"glyphicon glyphicon-plus\"></span></a><hr>");
 					$('#managing_page_header').html("<h1 class=\"page-header\">" + user + "'s\
 	                    <small>Expenses</small>\
@@ -51,7 +58,7 @@ function get_expenses(url, all_users, user, csrf) {
 		                <p style=\"font-weight: bold\">" + exp['description'] + "</p>\
 	                    <p style=\"font-weight: bold\">Amount: $" + exp['amount'] + "</p>\
 	                </div>\
-	                <div class=\"col-md-4\">" + exp['date_time'] + "</div>\
+	                <div class=\"col-md-4\">" + exp['date_time'] + display_owner(all_users, exp['owner'][0] + ' ' + exp['owner'][1]) + "</div>\
                 	" + generate_action_buttons(all_users, exp['id'], csrf) + "\
 		            </div>\
 		            <hr id=\"expense" + exp['id'] + "hr\">"
