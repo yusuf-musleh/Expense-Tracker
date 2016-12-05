@@ -51,3 +51,13 @@ footer {
     background-color: white;
     color: #5693e9
 }
+
+#filter_expenses_btn {
+    background-color: #5693e9;
+    color: white;
+}
+
+#filter_expenses_btn:hover {
+    background-color: white;
+    color: #5693e9;
+}

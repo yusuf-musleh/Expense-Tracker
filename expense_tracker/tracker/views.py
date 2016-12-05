@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 
 from tracker.models import Expense
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import json
 
@@ -142,8 +142,33 @@ def update_expense(request):
 		return HttpResponse(json.dumps(failed_data))
 
 
+@login_required(login_url='/signin/')
+def get_report(request):
+	try:
+		user_expenses = Expense.objects.filter(owner=request.user)
+		expenses_per_week = {}
 
+		for exp in user_expenses:
 
+			# Finding start and end date of week of this expense
+			dt = exp.date_time
+			start = dt - timedelta(days=dt.weekday())
+			end = start + timedelta(days=6)
+			start_week_date = str(start).split(' ')[0]
+			end_week_date =  str(end).split(' ')[0]
 
+			week = expenses_per_week.get(start_week_date)
+			if week:
+				week[1] += float(exp.amount)
+				week[2].append(exp.to_json())
+				expenses_per_week[start_week_date] = week
+			else:
+				expenses_per_week[start_week_date] = [end_week_date, float(exp.amount), [exp.to_json()]]
+
+		success_data = {'status': 'success', 'expenses_per_week': expenses_per_week}
+		return HttpResponse(json.dumps(success_data))
+	except:
+		failed_data = {'status': 'failed', 'message': 'Could not get expense report!'}
+		return HttpResponse(json.dumps(failed_data))
 
 

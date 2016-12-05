@@ -14,8 +14,6 @@ function generate_action_buttons(all_users, id, csrf) {
 	}
 }
 
-// update_expense('/update_expense/, 'expense3', 'yturv2IiczL27K6T55vmCh0YgHQoLpUiEJNHDueyN5GfFhTgPZ59DskVxA0kqyZj')
-// update_expense(/update_expense/, 'expense3', 'uTqKTpBUKW7jnsZFT9fAzT1PiREBc6flA9J01R7als2wVZM2D3PnA4lMzKOxRfkm')
 
 function display_owner(all_users, owner){
 	if (all_users == 'false'){
@@ -24,8 +22,9 @@ function display_owner(all_users, owner){
 	return "<p style=\"font-weight: bold\">" + owner + "</p>"
 }
 
-function get_expenses(url, all_users, user, csrf) {
 
+function get_expenses(url, all_users, user, csrf) {
+	$('#expense_report').html("");
 	$.post(url,
 		{
 			csrfmiddlewaretoken: csrf,
@@ -137,6 +136,7 @@ function submit_new_expense_form(url, csrf) {
 	return false;
 }
 
+
 function delete_expense(url, expense_div_id, csrf) {
 	expense_id = expense_div_id.replace('expense', '');
 
@@ -192,11 +192,8 @@ function update_expense(url, expense_div_id, csrf) {
 							});\
 						</script>");
 
-
-
-
-
 }
+
 
 function save_updated_expense(url, expense_div_id, csrf) {
 
@@ -244,6 +241,85 @@ function save_updated_expense(url, expense_div_id, csrf) {
 }
 
 
+function get_report(url, owner, csrf) {
+	$("#expenses_div").html("");
+	$("#add_expense_div").html("");
+	$('.navbar-default .navbar-nav > li > a').css('color', '#B4B4B4');
+	$('#report_a').css('color', 'white');
+	$("#managing_page_header > h1").html(owner + "'s <small>Expense Report</small>");
+
+	$.post(url,
+		{
+			csrfmiddlewaretoken: csrf,
+
+		},
+		function(data) {
+			data = JSON.parse(data);
+			if (data['status'] == 'success'){
+				var sorted_keys = []
+				$.each(data['expenses_per_week'], function(key, element) {
+					console.log(key + ' ' + element);
+					sorted_keys.push(key);
+				});
+				sorted_keys.sort();
+				var total_weekly_expenses = "<div class=\"row\">";
+				for (var i = 0; i < sorted_keys.length; i++){
+					var exp = "<div class=\"col-md-4\">\
+		    		<p style=\"font-weight: bold\">Week: " + sorted_keys[i] + " -- " + data['expenses_per_week'][sorted_keys[i]][0] + "</p>\
+		    		<p style=\"font-weight: bold\">Total Amount Spent: $" + data['expenses_per_week'][sorted_keys[i]][1] + "</p>\
+	    			<hr>\
+	    			</div>";
+	    		total_weekly_expenses += exp;
+				}
+
+				total_weekly_expenses += "</div><br>";
+				$("#expense_report").html(total_weekly_expenses);
+
+
+				var filter_elements = "<p style=\"font-weight: bold\">Get Expenses between Start and End Dates:</p>\
+		        	<div class=\"row\">\
+			        	<div class=\"col-md-4\">\
+			        		<label for=\"expense_date_time\">Start Date</label>\
+							<input class=\"form-control\" id=\"report_start_datetime\" type=\"text\" name=\"date\" value=\"\">\
+							<script type=\"text/javascript\">\
+								$(function(){\
+									$('*[name=date]').appendDtpicker({\
+										\"minuteInterval\": 5\
+									});\
+								});\
+							</script>\
+						</div>\
+						<div class=\"col-md-4\">\
+			        		<label for=\"expense_date_time\">End Date</label>\
+							<input class=\"form-control\" id=\"report_end_datetime\" type=\"text\" name=\"date\" value=\"\">\
+							<script type=\"text/javascript\">\
+								$(function(){\
+									$('*[name=date]').appendDtpicker({\
+										\"minuteInterval\": 5\
+									});\
+								});\
+							</script>\
+						</div>\
+					</div>\
+					<br>\
+					<div class=\"row\">\
+						<div class=\"col-md-4\">\
+							<a class=\"btn btn-default\" href=\"#\" id='filter_expenses_btn'>Filter Expenses<span class=\"glyphicon glyphicon-filter\"></span></a>\
+						</div>\
+					</div>";
+
+
+				$("#expense_report").append(filter_elements);
+
+
+			}
+			else{
+				alert(data['message'])
+			}
+
+		});
+
+}
 
 
 

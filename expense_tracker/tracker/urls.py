@@ -17,4 +17,7 @@ urlpatterns = [
 	url(r'^delete_expense/', views.delete_expense, name='delete_expense'),
 	url(r'^update_expense/', views.update_expense, name='update_expense'),
 
+	# Report
+	url(r'^get_report/', views.get_report, name='get_report'),
+
 ]
