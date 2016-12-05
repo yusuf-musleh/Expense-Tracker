@@ -119,9 +119,8 @@ function submit_new_expense_form(url, csrf) {
 	            </div>\
 	            <hr id=\"expense" + data['new_id'] + "hr\">"
 
-	            if ($('#expenses_div').children().size() == 0){
-	            	$( "#no_expense_div" ).remove();
-	            }
+            	$( "#no_expense_div" ).remove();
+
 
 				$('#expenses_div').append( new_expense_html );
 
