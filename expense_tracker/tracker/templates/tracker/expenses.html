@@ -55,9 +55,6 @@
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
-                    <!-- <li>
-                        <a href="#">All</a>
-                    </li> -->
                     <li>
                         <a href="#" style="color: white" id="my_expenses_a" onclick="get_expenses('{% url 'get_expenses' %}', 'false', '{{ user.first_name }} ' + '{{ user.last_name }}' ,'{{ csrf_token }}')">My Expenses</a>
                     </li>
@@ -127,64 +124,6 @@
 
         <div id="expense_report">
 
-			<div class="row">
-				<div class="col-md-4">
-	    		<p style="font-weight: bold">Week: 2016-11-13 -- 2016-11-19</p>
-	    		<p style="font-weight: bold">Total Amount Spent: $34.13</p>
-	    		<hr>
-	    		</div>
-	    		<div class="col-md-4">
-				<p style="font-weight: bold">Week: 2016-11-13 -- 2016-11-19</p>
-	    		<p style="font-weight: bold">Total Amount Spent: $34.13</p>
-	    		<hr>
-	    		</div>
-	    		<div class="col-md-4">
-	    		<p style="font-weight: bold">Week: 2016-11-13 -- 2016-11-19</p>
-	    		<p style="font-weight: bold">Total Amount Spent: $34.13</p>
-	    		<hr>
-	    		</div>
-	    		<div class="col-md-4">
-	    		<p style="font-weight: bold">Week: 2016-11-13 -- 2016-11-19</p>
-	    		<p style="font-weight: bold">Total Amount Spent: $34.13</p>
-	    		<hr>
-	    		</div>
-    		</div>
-
-    		<br>
-
-        	<p style="font-weight: bold">Get Expenses between Start and End Dates:</p>
-        	<div class="row">
-
-	        	<div class="col-md-4">
-	        		<label for="expense_date_time">Start Date</label>
-					<input class="form-control" id="report_start_datetime" type="text" name="date" value="">
-					<script type="text/javascript">
-						$(function(){
-							$('*[name=date]').appendDtpicker({
-								"minuteInterval": 5
-							});
-						});
-					</script>
-				</div>
-				<div class="col-md-4">
-	        		<label for="expense_date_time">End Date</label>
-					<input class="form-control" id="report_end_datetime" type="text" name="date" value="">
-					<script type="text/javascript">
-						$(function(){
-							$('*[name=date]').appendDtpicker({
-								"minuteInterval": 5
-							});
-						});
-					</script>
-				</div>
-
-			</div>
-			<br>
-			<div class="row">
-				<div class="col-md-4">
-					<a class="btn btn-default" href="#" id='filter_expenses_btn'>Filter Expenses<span class="glyphicon glyphicon-filter"></span></a>
-				</div>
-			</div>
 		</div>
 
 
@@ -290,7 +229,7 @@
                             <button type="submit" id='new_expense_btn_submit' class="btn btn-default">
                                 Submit
                             </button>
-                            <!-- <button type="submit" class="btn btn-primary">Save changes</button> -->
+
                         </div>
 
                     </form>

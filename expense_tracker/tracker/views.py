@@ -12,14 +12,15 @@ import json
 def index(request):
 	context = {}
 	user_expenses = Expense.objects.filter(owner=request.user)
+	user_expenses = map(lambda x: x.to_json(), user_expenses)
 	context['expenses'] = user_expenses
-	# context['expenses'] = [{'date_time': '12/1/16', 'amount': '15.00', 'description': 'Pizza for lunch.'}, {'date_time': '11/29/16', 'amount': '5.99', 'description': 'Coffee for coding.'}]
 	return render(request, 'tracker/expenses.html', context)
 
 
 @login_required(login_url='/signin/')
 def get_expenses(request):
 	all_users = request.POST['all_users']
+	# Check if user is an admin to fetch all saved expenses if requested
 	if all_users == 'true' and request.user.is_staff:
 		success_data = {}
 		everyones_expenses = Expense.objects.all()
@@ -84,7 +85,6 @@ def create_new_expense(request):
 			new_expense = Expense(owner=request.user, date_time=datetime_object, amount=amount, description=description)
 			new_expense.save()
 
-			# success_data = ['success', new_expense.id, new_expense.date_time.strftime("%b. %-d, %Y, %-I:%M %p")]
 			success_data = {'status': 'success', 'new_id': new_expense.id, 'readable_date': new_expense.date_time.strftime("%b. %-d, %Y, %-I:%M %p")}
 			return HttpResponse(json.dumps( success_data ))
 		except:
@@ -170,5 +170,35 @@ def get_report(request):
 	except:
 		failed_data = {'status': 'failed', 'message': 'Could not get expense report!'}
 		return HttpResponse(json.dumps(failed_data))
+
+
+@login_required(login_url='/signin/')
+def filter_expenses(request):
+	if request.method == 'POST':
+		try:
+
+			start_date = request.POST['start_date']
+			end_date = request.POST['end_date']
+
+			start_date = datetime.strptime(start_date, '%Y-%m-%d %H:%M').replace(tzinfo=None)
+			end_date = datetime.strptime(end_date, '%Y-%m-%d %H:%M').replace(tzinfo=None)
+
+			user_expenses = Expense.objects.filter(owner=request.user)
+			expenses_between = []
+			for exp in user_expenses:
+				exp_date_time = exp.date_time.replace(tzinfo=None)
+				if start_date <= exp_date_time and exp_date_time <= end_date:
+					expenses_between.append(exp.to_json())
+			print len(user_expenses)
+			print len(expenses_between)
+			success_data = {'status': 'success', 'expenses_between': expenses_between}
+			return HttpResponse(json.dumps(success_data))
+		except:
+			failed_data = {'status': 'failed', 'message': 'Failed to filter expenses!'}
+			return HttpResponse(json.dumps(failed_data))
+	else:
+		failed_data = {'status': 'failed', 'message': 'Failed to filter expenses!'}
+		return HttpResponse(json.dumps)
+
 
 

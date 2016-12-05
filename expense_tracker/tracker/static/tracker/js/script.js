@@ -98,7 +98,7 @@ function submit_new_expense_form(url, csrf) {
 		function(data) {
 			data = JSON.parse(data);
 			if (data['status'] == 'success'){
-				sucess_date = data['readable_date'].replace('PM', 'p.m.').replace('AM', 'a.m.');
+				sucess_date = data['readable_date'];
 				$('#new_expense_modal').modal('hide');
 				$('#newExpenseForm')[0].reset();
 
@@ -183,7 +183,10 @@ function update_expense(url, expense_div_id, csrf) {
 	$('#' + expense_div_id).find('#desc_and_amount').html(editable_desc_and_amount);
 
 	// Adding expense date field in order to update date
-	$('#' + expense_div_id).find('#date_and_time').html("<input class=\"form-control\" id=\"expense_date_time\" type=\"text\" name=\"date\" value=\"\">\
+	current_datetime = new Date($('#' + expense_div_id).find('#date_and_time').text());
+	current_datetime = $.format.date(current_datetime, "yyyy/MM/dd HH:mm");
+
+	$('#' + expense_div_id).find('#date_and_time').html("<input class=\"form-control\" id=\"expense_date_time\" type=\"text\" name=\"date\" value=\"" + current_datetime + "\">\
 						<script type=\"text/javascript\">\
 							$(function(){\
 								$('*[name=date]').appendDtpicker({\
@@ -241,6 +244,49 @@ function save_updated_expense(url, expense_div_id, csrf) {
 }
 
 
+function filter_expenses(url, csrf){
+
+	var start_date = $("#report_start_datetime").val().trim();
+	var end_date = $("#report_end_datetime").val().trim();
+
+
+	$.post(url,
+		{
+			csrfmiddlewaretoken: csrf,
+			start_date: start_date,
+			end_date: end_date
+
+		},
+		function(data) {
+			data = JSON.parse(data);
+			if (data['status'] == 'success'){
+				var expenses = ""
+				for (var i = 0; i < data['expenses_between'].length; i++) {
+					expense = "<div id=\"expense" + data['expenses_between'][i]['id'] + "\" class=\"row\">\
+						<div id=\"desc_and_amount\" class=\"col-md-5\">\
+							<p style=\"font-weight: bold\">" + data['expenses_between'][i]['description'] + "</p>\
+							<p style=\"font-weight: bold\">Amount: $" + data['expenses_between'][i]['amount'] + "</p>\
+						</div>\
+						<div id=\"date_and_time\" class=\"col-md-4\">" + data['expenses_between'][i]['date_time'] + "\
+						</div>\
+					</div>\
+					<hr id=\"expense" + data['expenses_between'][i]['id'] + "hr\">"
+					expenses += expense
+				}
+
+				$("#filtered_results").html(expenses);
+
+			}
+			else{
+				alert(data['message'])
+			}
+		}
+	);
+
+}
+
+
+
 function get_report(url, owner, csrf) {
 	$("#expenses_div").html("");
 	$("#add_expense_div").html("");
@@ -258,7 +304,6 @@ function get_report(url, owner, csrf) {
 			if (data['status'] == 'success'){
 				var sorted_keys = []
 				$.each(data['expenses_per_week'], function(key, element) {
-					console.log(key + ' ' + element);
 					sorted_keys.push(key);
 				});
 				sorted_keys.sort();
@@ -304,8 +349,11 @@ function get_report(url, owner, csrf) {
 					<br>\
 					<div class=\"row\">\
 						<div class=\"col-md-4\">\
-							<a class=\"btn btn-default\" href=\"#\" id='filter_expenses_btn'>Filter Expenses<span class=\"glyphicon glyphicon-filter\"></span></a>\
+							<a class=\"btn btn-default\" href=\"#\" onclick=\"filter_expenses('/filter_expenses/', '" + csrf + "')\" id='filter_expenses_btn'>Filter Expenses<span class=\"glyphicon glyphicon-filter\"></span></a>\
 						</div>\
+					</div>\
+					<hr>\
+					<div id=\"filtered_results\">\
 					</div>";
 
 
