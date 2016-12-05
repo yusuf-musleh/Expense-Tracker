@@ -26,5 +26,5 @@ Sign in using one of the following accounts (These are test accounts used for de
 * username: will_smith, password: willpassword, (Admin User)
 * username: tom_jones, password: tom_jonespassword, (Normal User)
 
-The only difference between admin users and normal users, is that admin users are able to view all saved expenses from all useres.
+The only difference between admin users and normal users, is that admin users are able to view all saved expenses from all users.
 
