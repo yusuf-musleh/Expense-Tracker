@@ -13,7 +13,7 @@ class Expense(models.Model):
 
 
 	def to_json(self):
-		date_time_str = self.date_time.strftime("%b. %-d, %Y, %-I:%M %p")
+		date_time_str = self.date_time.strftime("%b. %d, %Y, %I:%M %p")
 		return dict(id=self.id, owner=[self.owner.first_name, self.owner.last_name], date_time=date_time_str, amount=str(self.amount), description=self.description)
 
 
